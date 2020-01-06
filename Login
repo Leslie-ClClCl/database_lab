@@ -1,0 +1,82 @@
+from tkinter import *
+import mysql.connector
+from tkinter import ttk
+import tkinter.messagebox
+import MenuUI
+
+
+def main():
+    def closeThisWindow():
+        root.destroy()
+
+    def connectDatabase(usrBox: Entry, pswBox: Entry):
+        username = usrBox.get()
+        password = pswBox.get()
+        try:
+            databaseHandle = mysql.connector.connect(
+                host="localhost",  # 数据库主机地址
+                user=username,  # 数据库用户名
+                passwd=password,  # 数据库密码
+                database="S_T_U201714863"  # 数据库名称
+            )
+
+            closeThisWindow()
+            # tkinter.messagebox.showinfo('登录成功', '欢迎 %s !' % username)
+            MenuUI.indexUI(databaseHandle)
+            myCursor = databaseHandle.cursor()
+            myCursor.execute("SHOW TABLES;")
+            for x in myCursor:
+                print(x)
+        except:
+            tkinter.messagebox.showinfo(root, "登录失败!\n")
+
+
+    # 初始化
+    root = Tk()
+
+    # 设置窗体标题
+    root.title('数据库实验 实验四 学生管理系统')
+
+    # 设置窗口大小和位置
+    root.geometry('550x360')
+    # 以下方法用来计算并设置窗体显示时，在屏幕中心居中
+    scnWidth, scnHeight = root.maxsize()  # get screen width and height
+    tmpcnf = '+%d+%d' % ((scnWidth - 500) / 2, (scnHeight - 300) / 2)
+    root.geometry(tmpcnf)
+
+    top_frame = Frame(root, bg='#fff')
+    index_lable = Label(top_frame, text='Log In', font=('Sinhala MN', '50', 'bold'))
+    signature_lable = Label(top_frame, text='-- -- by Leslie', font=('SignPainter', '25', 'italic'))
+
+    top_frame.pack(fill=X, side=TOP, padx=0, pady=0)
+    index_lable.pack(side='left', ipadx=30, pady=8)
+    signature_lable.pack(side='left', ipadx=0, ipady=20)
+
+    loginInfoFrame = Frame(root, bg='#ececec')
+    usernameFrame = Frame(loginInfoFrame, bg='#ececec')
+    usernameLabel = Label(usernameFrame, text='用户名', bg='#ececec')
+    usernameBox = Entry(usernameFrame)
+    passwordFrame = Frame(loginInfoFrame, bg='#ececec')
+    passwordLabel = Label(passwordFrame, text='密   码', bg='#ececec')
+    passwordBox = Entry(passwordFrame)
+
+    buttonFrame = Frame(root)
+    loginButton = ttk.Button(buttonFrame, text='登录', width=25,
+                             command=lambda: connectDatabase(usernameBox, passwordBox))
+    exitButton = ttk.Button(buttonFrame, text='退出', width=25, command=closeThisWindow)
+
+    loginInfoFrame.pack(fill=X, side='top', ipady=5)
+    usernameFrame.pack(side='top', ipadx=5, ipady=20)
+    passwordFrame.pack(side='top', ipadx=5, ipady=20)
+    usernameLabel.pack(side="left", pady=5, ipady=5)
+    usernameBox.pack(side="right", pady=5, ipady=5)
+    passwordLabel.pack(side="left", pady=5, ipady=5)
+    passwordBox.pack(side="right", pady=5, ipady=5)
+    buttonFrame.pack(fill=X, side='top', ipady=5)
+    loginButton.pack(side="left", pady=5, ipady=5)
+    exitButton.pack(side="right", pady=5, ipady=5)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
